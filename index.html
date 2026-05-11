@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Destination Unstuck™ — Self Assessment</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple: #5C3D7A;
+    --purple-dark: #2C1F3D;
+    --sage: #7A9E7E;
+    --beige: #F5F0E8;
+    --beige-dark: #EAE3D6;
+    --red: #C0392B;
+    --yellow: #D4A017;
+    --green: #2D7D4A;
+    --red-light: #FDECEA;
+    --yellow-light: #FDF8E7;
+    --green-light: #EAF5EE;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--purple-dark);
+    color: var(--beige);
+    min-height: 100vh;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  /* ── SCREEN SYSTEM ── */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--purple-dark);
+    padding: 20px 24px 16px;
+    text-align: center;
+    border-bottom: 1px solid rgba(245,240,232,0.12);
+    position: sticky; top: 0; z-index: 10;
+  }
+  .header-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--sage);
+    opacity: 0.9;
+  }
+  .progress-bar-wrap {
+    margin-top: 10px;
+    height: 3px;
+    background: rgba(245,240,232,0.12);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--sage);
+    border-radius: 2px;
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+  .progress-label {
+    font-size: 11px;
+    color: rgba(245,240,232,0.45);
+    margin-top: 6px;
+    letter-spacing: 1px;
+  }
+
+  /* ── INTRO SCREEN ── */
+  #screen-intro {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 48px 28px;
+    background: radial-gradient(ellipse at 50% 30%, rgba(92,61,122,0.6) 0%, var(--purple-dark) 70%);
+  }
+  .intro-eyebrow {
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 20px;
+  }
+  .intro-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 8vw, 52px);
+    line-height: 1.1;
+    margin-bottom: 8px;
+    color: var(--beige);
+  }
+  .intro-title em {
+    font-style: italic;
+    color: var(--sage);
+  }
+  .intro-sub {
+    font-size: 15px;
+    line-height: 1.6;
+    color: rgba(245,240,232,0.7);
+    max-width: 340px;
+    margin: 0 auto 36px;
+  }
+  .intro-pillars {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 40px;
+  }
+  .pillar-chip {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .pillar-chip.calm { background: rgba(192,57,43,0.18); color: #E8806F; border: 1px solid rgba(192,57,43,0.3); }
+  .pillar-chip.clarity { background: rgba(212,160,23,0.18); color: #E8C96F; border: 1px solid rgba(212,160,23,0.3); }
+  .pillar-chip.action { background: rgba(45,125,74,0.25); color: #7AC995; border: 1px solid rgba(45,125,74,0.35); }
+
+  .intro-note {
+    font-size: 12px;
+    color: rgba(245,240,232,0.4);
+    margin-bottom: 32px;
+    font-style: italic;
+  }
+
+  /* ── BUTTONS ── */
+  .btn-primary {
+    background: var(--sage);
+    color: var(--purple-dark);
+    border: none;
+    border-radius: 50px;
+    padding: 16px 40px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+    max-width: 280px;
+  }
+  .btn-primary:hover { background: var(--beige); transform: translateY(-1px); }
+  .btn-secondary {
+    background: transparent;
+    color: var(--beige);
+    border: 1px solid rgba(245,240,232,0.3);
+    border-radius: 50px;
+    padding: 14px 32px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+    max-width: 280px;
+    margin-top: 10px;
+  }
+  .btn-secondary:hover { border-color: var(--sage); color: var(--sage); }
+
+  /* ── QUESTION SCREEN ── */
+  #screen-question {
+    flex-direction: column;
+  }
+  .question-body {
+    flex: 1;
+    padding: 28px 24px 24px;
+    display: flex;
+    flex-direction: column;
+  }
+  .q-category {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+  .q-category.calm { color: #E8806F; }
+  .q-category.clarity { color: #E8C96F; }
+  .q-category.action { color: #7AC995; }
+
+  .q-number {
+    font-size: 13px;
+    color: rgba(245,240,232,0.35);
+    margin-bottom: 8px;
+  }
+  .q-text {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(20px, 5.5vw, 26px);
+    line-height: 1.35;
+    margin-bottom: 32px;
+    flex: 1;
+  }
+
+  /* ── LIKERT OPTIONS ── */
+  .options-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    border-radius: 14px;
+    border: 1.5px solid rgba(245,240,232,0.12);
+    background: rgba(245,240,232,0.04);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    color: var(--beige);
+    font-family: 'DM Sans', sans-serif;
+  }
+  .option-btn:hover { border-color: rgba(245,240,232,0.3); background: rgba(245,240,232,0.08); }
+  .option-btn.selected-red {
+    border-color: var(--red);
+    background: rgba(192,57,43,0.15);
+  }
+  .option-btn.selected-yellow {
+    border-color: var(--yellow);
+    background: rgba(212,160,23,0.15);
+  }
+  .option-btn.selected-green {
+    border-color: var(--green);
+    background: rgba(45,125,74,0.2);
+  }
+  .option-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .dot-red { background: var(--red); }
+  .dot-yellow { background: var(--yellow); }
+  .dot-green { background: var(--green); }
+
+  .option-text-wrap {}
+  .option-label {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+  }
+  .option-desc {
+    font-size: 11.5px;
+    color: rgba(245,240,232,0.5);
+    margin-top: 2px;
+    line-height: 1.4;
+  }
+
+  .nav-row {
+    display: flex;
+    gap: 10px;
+    padding: 0 24px 32px;
+  }
+  .btn-back {
+    background: transparent;
+    border: 1px solid rgba(245,240,232,0.2);
+    color: rgba(245,240,232,0.5);
+    border-radius: 50px;
+    padding: 14px 22px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .btn-back:hover { border-color: rgba(245,240,232,0.4); color: var(--beige); }
+  .btn-next {
+    flex: 1;
+    background: var(--purple);
+    border: none;
+    border-radius: 50px;
+    color: var(--beige);
+    font-size: 15px;
+    font-weight: 500;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    opacity: 0.4;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-next.enabled { opacity: 1; background: var(--purple); }
+  .btn-next.enabled:hover { background: #6E4A90; }
+
+  /* ── RESULTS SCREEN ── */
+  #screen-results {
+    flex-direction: column;
+    background: var(--purple-dark);
+  }
+  .results-header {
+    padding: 28px 24px 20px;
+    text-align: center;
+    background: radial-gradient(ellipse at 50% 0%, rgba(92,61,122,0.5) 0%, transparent 70%);
+  }
+  .results-eyebrow {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 12px;
+  }
+  .results-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  .results-subtitle {
+    font-size: 13px;
+    color: rgba(245,240,232,0.5);
+  }
+
+  .results-body { padding: 8px 20px 32px; flex: 1; }
+
+  /* ── GAUGE CARDS ── */
+  .gauge-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .gauge-card {
+    border-radius: 18px;
+    padding: 20px 20px 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .gauge-card.red-card { background: rgba(192,57,43,0.12); border: 1.5px solid rgba(192,57,43,0.3); }
+  .gauge-card.yellow-card { background: rgba(212,160,23,0.1); border: 1.5px solid rgba(212,160,23,0.3); }
+  .gauge-card.green-card { background: rgba(45,125,74,0.12); border: 1.5px solid rgba(45,125,74,0.3); }
+
+  .gauge-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .gauge-label {
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .gauge-score-badge {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+  }
+  .red-card .gauge-label, .red-card .gauge-score-badge { color: #E8806F; }
+  .yellow-card .gauge-label, .yellow-card .gauge-score-badge { color: #E8C96F; }
+  .green-card .gauge-label, .green-card .gauge-score-badge { color: #7AC995; }
+
+  .gauge-status {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--beige);
+  }
+  .gauge-desc {
+    font-size: 12.5px;
+    color: rgba(245,240,232,0.6);
+    line-height: 1.5;
+  }
+  .gauge-bar-track {
+    height: 5px;
+    background: rgba(245,240,232,0.1);
+    border-radius: 3px;
+    margin-top: 14px;
+    overflow: hidden;
+  }
+  .gauge-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 1s ease;
+  }
+  .red-card .gauge-bar-fill { background: var(--red); }
+  .yellow-card .gauge-bar-fill { background: var(--yellow); }
+  .green-card .gauge-bar-fill { background: var(--green); }
+
+  /* ── OVERALL TAG ── */
+  .overall-section {
+    background: rgba(245,240,232,0.05);
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .overall-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(245,240,232,0.45);
+    margin-bottom: 8px;
+  }
+  .overall-tag {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    margin-bottom: 6px;
+    color: var(--beige);
+  }
+  .overall-note {
+    font-size: 12px;
+    color: rgba(245,240,232,0.5);
+    line-height: 1.5;
+  }
+
+  /* ── CONVERSATION PROMPTS ── */
+  .prompts-section { margin-bottom: 24px; }
+  .prompts-title {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 12px;
+  }
+  .prompt-item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(245,240,232,0.08);
+  }
+  .prompt-item:last-child { border-bottom: none; }
+  .prompt-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .prompt-text {
+    font-size: 13px;
+    line-height: 1.5;
+    color: rgba(245,240,232,0.75);
+    font-style: italic;
+  }
+
+  .results-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 0 4px;
+  }
+
+  .brand-footer {
+    text-align: center;
+    padding: 20px 24px 32px;
+    font-size: 11px;
+    color: rgba(245,240,232,0.25);
+    letter-spacing: 1px;
+  }
+  .brand-footer strong { color: rgba(245,240,232,0.4); }
+
+  /* ── FADE ANIMATIONS ── */
+  .fade-in {
+    animation: fadeIn 0.4s ease forwards;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════ INTRO ══════════════════════════════ -->
+<div id="screen-intro" class="screen active">
+  <p class="intro-eyebrow">Keshia Trotman &amp; Associates</p>
+  <h1 class="intro-title">Destination<br><em>Unstuck™</em></h1>
+  <p class="intro-sub">A quick pulse check on where you are — so we can have a better conversation about where you're going.</p>
+  <div class="intro-pillars">
+    <span class="pillar-chip calm">Calm</span>
+    <span class="pillar-chip clarity">Clarity</span>
+    <span class="pillar-chip action">Action</span>
+  </div>
+  <p class="intro-note">6 questions · 2–3 minutes · No wrong answers</p>
+  <button class="btn-primary" onclick="startAssessment()">Begin Assessment →</button>
+</div>
+
+<!-- ══════════════════════════════ QUESTION ══════════════════════════════ -->
+<div id="screen-question" class="screen">
+  <div class="header">
+    <div class="header-brand">Destination Unstuck™</div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progress-fill"></div>
+    </div>
+    <div class="progress-label" id="progress-label">Question 1 of 6</div>
+  </div>
+  <div class="question-body fade-in" id="question-body">
+    <!-- dynamically rendered -->
+  </div>
+  <div class="nav-row">
+    <button class="btn-back" id="btn-back" onclick="goBack()">← Back</button>
+    <button class="btn-next" id="btn-next" onclick="goNext()">Continue →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ RESULTS ══════════════════════════════ -->
+<div id="screen-results" class="screen">
+  <div class="results-header">
+    <p class="results-eyebrow">Your Snapshot</p>
+    <h2 class="results-title" id="results-title">Your Results</h2>
+    <p class="results-subtitle" id="results-subtitle">Here's where you are right now.</p>
+  </div>
+  <div class="results-body fade-in">
+
+    <div class="gauge-cards" id="gauge-cards"></div>
+
+    <div class="overall-section" id="overall-section"></div>
+
+    <div class="prompts-section" id="prompts-section"></div>
+
+    <div class="results-cta">
+      <button class="btn-primary" onclick="window.print ? window.print() : alert('Use your browser\'s share/screenshot to save.')">Save My Results 📋</button>
+      <button class="btn-secondary" onclick="resetAssessment()">Start Over</button>
+    </div>
+  </div>
+  <div class="brand-footer"><strong>Destination Unstuck™</strong> · Keshia Trotman &amp; Associates, LLC</div>
+</div>
+
+<script>
+// ══════════════════ QUESTION BANK ══════════════════
+
+const questions = [
+  // CALM (2 questions)
+  {
+    id: 'c1',
+    pillar: 'calm',
+    text: 'If I\'m being honest, when I think about everything on my plate right now, I feel...',
+    options: [
+      { score: 1, color: 'red',    label: 'Buried',   desc: 'I am running on empty and I know it. Something has to give.' },
+      { score: 2, color: 'yellow', label: 'Stretched', desc: 'I am holding it together, but there is tension underneath.' },
+      { score: 3, color: 'green',  label: 'Steady',   desc: 'I am in a hard season but I feel grounded in it.' },
+    ]
+  },
+  {
+    id: 'c2',
+    pillar: 'calm',
+    text: 'Lately, when something unexpected hits, my first response is usually...',
+    options: [
+      { score: 1, color: 'red',    label: 'React first, regroup later', desc: 'I am in survival mode and it shows.' },
+      { score: 2, color: 'yellow', label: 'Depends on the day',         desc: 'Some days I handle it well. Other days, not so much.' },
+      { score: 3, color: 'green',  label: 'Pause before I respond',     desc: 'I am not perfect, but I can usually catch myself.' },
+    ]
+  },
+  // CLARITY (2 questions)
+  {
+    id: 'cl1',
+    pillar: 'clarity',
+    text: 'When someone asks me what I really want right now — for my work, my life, or both — I...',
+    options: [
+      { score: 1, color: 'red',    label: 'Go blank',                    desc: 'Honestly, I have no idea. The question stresses me out.' },
+      { score: 2, color: 'yellow', label: 'Have a feeling but can\'t name it', desc: 'Something is pulling me, but I can\'t quite see it yet.' },
+      { score: 3, color: 'green',  label: 'Know the answer',             desc: 'I might not have all the steps, but I know where I\'m trying to go.' },
+    ]
+  },
+  {
+    id: 'cl2',
+    pillar: 'clarity',
+    text: 'Right now, my to-do list and my actual priorities...',
+    options: [
+      { score: 1, color: 'red',    label: 'Have nothing to do with each other', desc: 'I am busy but not on the right things.' },
+      { score: 2, color: 'yellow', label: 'Are kind of aligned',                desc: 'I know what matters, but other things keep cutting in line.' },
+      { score: 3, color: 'green',  label: 'Match up pretty well',               desc: 'I am spending my time and energy where it counts.' },
+    ]
+  },
+  // ACTION (2 questions)
+  {
+    id: 'a1',
+    pillar: 'action',
+    text: 'There is something I know I need to do — or start — and right now I am...',
+    options: [
+      { score: 1, color: 'red',    label: 'Not moving',     desc: 'I know what it is. I just cannot make myself do it.' },
+      { score: 2, color: 'yellow', label: 'Moving in spurts', desc: 'I start, then stall. Then start again. The cycle is exhausting.' },
+      { score: 3, color: 'green',  label: 'In motion',      desc: 'Not perfectly, but I am showing up and making progress.' },
+    ]
+  },
+  {
+    id: 'a2',
+    pillar: 'action',
+    text: 'If I am being real with myself, what is keeping me stuck is mostly...',
+    options: [
+      { score: 1, color: 'red',    label: 'Me',             desc: 'Fear, perfectionism, avoidance — I know it is an inside job.' },
+      { score: 2, color: 'yellow', label: 'Hard to say',    desc: 'It is a mix of me and my circumstances. I cannot always tell which is which.' },
+      { score: 3, color: 'green',  label: 'My situation, not me', desc: 'I am ready. The conditions just need to catch up.' },
+    ]
+  }
+];
+
+// ══════════════════ STATE ══════════════════
+
+let currentQ = 0;
+let answers = {}; // { questionId: { score, color } }
+
+// ══════════════════ SCREEN TRANSITIONS ══════════════════
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function startAssessment() {
+  currentQ = 0;
+  answers = {};
+  renderQuestion();
+  showScreen('screen-question');
+}
+
+function resetAssessment() {
+  startAssessment();
+  showScreen('screen-intro');
+}
+
+// ══════════════════ RENDER QUESTION ══════════════════
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  const total = questions.length;
+  const pct = Math.round((currentQ / total) * 100);
+
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = `Question ${currentQ + 1} of ${total}`;
+  document.getElementById('btn-back').style.display = currentQ === 0 ? 'none' : 'block';
+
+  const selected = answers[q.id];
+  const nextBtn = document.getElementById('btn-next');
+  nextBtn.className = 'btn-next' + (selected ? ' enabled' : '');
+  nextBtn.textContent = currentQ === total - 1 ? 'See My Results →' : 'Continue →';
+
+  const body = document.getElementById('question-body');
+  body.innerHTML = `
+    <p class="q-category ${q.pillar}">${pillarLabel(q.pillar)}</p>
+    <p class="q-number">Q${currentQ + 1}</p>
+    <p class="q-text">${q.text}</p>
+    <div class="options-stack">
+      ${q.options.map(opt => `
+        <button class="option-btn ${selected && selected.color === opt.color ? 'selected-' + opt.color : ''}"
+                onclick="selectAnswer('${q.id}', ${opt.score}, '${opt.color}', this)">
+          <span class="option-dot dot-${opt.color}"></span>
+          <span class="option-text-wrap">
+            <span class="option-label">${opt.label}</span>
+            <span class="option-desc">${opt.desc}</span>
+          </span>
+        </button>
+      `).join('')}
+    </div>
+  `;
+
+  // re-trigger fade
+  body.classList.remove('fade-in');
+  void body.offsetWidth;
+  body.classList.add('fade-in');
+}
+
+function pillarLabel(p) {
+  return { calm: '🌿 Calm', clarity: '🔦 Clarity', action: '⚡ Action' }[p];
+}
+
+function selectAnswer(qId, score, color, el) {
+  answers[qId] = { score, color };
+  document.querySelectorAll('.option-btn').forEach(b => {
+    b.className = 'option-btn';
+  });
+  el.classList.add('selected-' + color);
+  const nextBtn = document.getElementById('btn-next');
+  nextBtn.classList.add('enabled');
+}
+
+function goNext() {
+  const q = questions[currentQ];
+  if (!answers[q.id]) return;
+  if (currentQ < questions.length - 1) {
+    currentQ++;
+    renderQuestion();
+  } else {
+    buildResults();
+    showScreen('screen-results');
+  }
+}
+
+function goBack() {
+  if (currentQ > 0) { currentQ--; renderQuestion(); }
+}
+
+// ══════════════════ RESULTS ENGINE ══════════════════
+
+function buildResults() {
+  const pillarQs = { calm: ['c1','c2'], clarity: ['cl1','cl2'], action: ['a1','a2'] };
+  const pillarInfo = {
+    calm:    { label: 'Calm',    emoji: '🌿', card: 'red-card',    bar: 'var(--red)',    colorClass: 'red' },
+    clarity: { label: 'Clarity', emoji: '🔦', card: 'yellow-card', bar: 'var(--yellow)', colorClass: 'yellow' },
+    action:  { label: 'Action',  emoji: '⚡', card: 'green-card',  bar: 'var(--green)',  colorClass: 'green' },
+  };
+
+  const scores = {};
+  for (const [pillar, qIds] of Object.entries(pillarQs)) {
+    const total = qIds.reduce((sum, id) => sum + (answers[id]?.score || 0), 0);
+    const max = qIds.length * 3;
+    scores[pillar] = { total, max, pct: Math.round((total / max) * 100) };
+  }
+
+  // Determine per-pillar status
+  function getStatus(pct) {
+    if (pct <= 33) return { label: 'Needs Attention', color: 'red' };
+    if (pct <= 66) return { label: 'Developing', color: 'yellow' };
+    return { label: 'Strength', color: 'green' };
+  }
+
+  const statusDescriptions = {
+    calm: {
+      red: 'Your nervous system is working overtime. Before anything else, the work begins here — with rest, regulation, and safety.',
+      yellow: 'You have moments of calm but they are fragile. Building steadiness will unlock everything else.',
+      green: 'You have a strong inner foundation. You can hold space for challenge without being consumed by it.',
+    },
+    clarity: {
+      red: 'Right now, the fog is real. Clarity will come — but it needs conditions: calm, space, and honest inquiry.',
+      yellow: 'You can see parts of the path. Some light is breaking through. The next step is trusting what you already know.',
+      green: 'You know what you want and why. This clarity is a superpower — protect and act on it.',
+    },
+    action: {
+      red: 'You are not stuck because you are broken. You are stuck because something needs to shift — internally or externally.',
+      yellow: 'You are moving, but not consistently. Identify the friction points and design around them.',
+      green: 'You are ready. The question now is strategy and support — not motivation.',
+    },
+  };
+
+  const conversationPrompts = {
+    calm: {
+      red: 'What does your body need before anything else?',
+      yellow: 'What helps you reset when things get noisy — and are you doing it?',
+      green: 'How are you protecting this calm as demands increase?',
+    },
+    clarity: {
+      red: 'If the fog could speak, what would it be trying to protect you from?',
+      yellow: 'What do you already know, that fear is making you doubt?',
+      green: 'What is the one next move that aligns with what you just clarified?',
+    },
+    action: {
+      red: 'What is the smallest possible step that would prove to yourself that movement is possible?',
+      yellow: 'Where does the momentum stall — and what is it costing you to stay there?',
+      green: 'What would it look like to trust yourself fully and go for it?',
+    },
+  };
+
+  // Gauge Cards
+  const gaugeEl = document.getElementById('gauge-cards');
+  gaugeEl.innerHTML = ['calm','clarity','action'].map(pillar => {
+    const info = pillarInfo[pillar];
+    const s = scores[pillar];
+    const status = getStatus(s.pct);
+    const desc = statusDescriptions[pillar][status.color];
+    return `
+      <div class="gauge-card ${info.card}">
+        <div class="gauge-row">
+          <span class="gauge-label">${info.emoji} ${info.label}</span>
+          <span class="gauge-score-badge">${s.total}/${s.max}</span>
+        </div>
+        <div class="gauge-status">${status.label}</div>
+        <div class="gauge-desc">${desc}</div>
+        <div class="gauge-bar-track">
+          <div class="gauge-bar-fill" style="width:0%" data-width="${s.pct}%"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Animate bars after render
+  setTimeout(() => {
+    document.querySelectorAll('.gauge-bar-fill').forEach(el => {
+      el.style.width = el.dataset.width;
+    });
+  }, 100);
+
+  // Overall profile
+  const allScores = Object.values(scores);
+  const overallPct = Math.round(allScores.reduce((s,x) => s + x.pct, 0) / allScores.length);
+  const lowestPillar = Object.entries(scores).sort((a,b) => a[1].pct - b[1].pct)[0][0];
+  const highestPillar = Object.entries(scores).sort((a,b) => b[1].pct - a[1].pct)[0][0];
+
+  const profiles = [
+    { min: 0,  max: 33, tag: 'The Exhausted Visionary',   note: 'You have big things inside you, but the tank is running low. Rest is not quitting — it is the strategy.' },
+    { min: 34, max: 55, tag: 'The Determined Mover',      note: 'You are somewhere in the middle of becoming. Some things are working. Others need honest attention.' },
+    { min: 56, max: 75, tag: 'The Almost-There Leader',   note: 'You are close. The scaffolding is there. What you need now is focus and follow-through.' },
+    { min: 76, max: 100, tag: 'The Ready Catalyst',       note: 'You are calm, clear, and ready. The question is not if — it is when and with whom.' },
+  ];
+  const profile = profiles.find(p => overallPct >= p.min && overallPct <= p.max);
+
+  document.getElementById('results-title').textContent = profile.tag;
+  document.getElementById('overall-section').innerHTML = `
+    <p class="overall-label">Your Profile</p>
+    <p class="overall-tag">${profile.tag}</p>
+    <p class="overall-note">${profile.note}</p>
+  `;
+
+  // Conversation prompts
+  const promptsEl = document.getElementById('prompts-section');
+  const promptList = ['calm','clarity','action'].map(p => {
+    const status = getStatus(scores[p].pct);
+    return { pillar: p, q: conversationPrompts[p][status.color], info: pillarInfo[p] };
+  });
+
+  promptsEl.innerHTML = `
+    <p class="prompts-title">💬 Conversation Starters</p>
+    ${promptList.map(item => `
+      <div class="prompt-item">
+        <span class="prompt-icon">${item.info.emoji}</span>
+        <span class="prompt-text">${item.q}</span>
+      </div>
+    `).join('')}
+  `;
+}
+</script>
+</body>
+</html>
